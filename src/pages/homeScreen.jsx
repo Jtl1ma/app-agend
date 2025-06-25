@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { 
+  Button,
   FlatList,
   View, 
   Text, 
@@ -18,7 +19,6 @@ import { format, set, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { AppointmentsContext } from '../context/appointmentsContext';
 import axios from "axios";
-import Voice, { SpeechResultsEvent } from '@react-native-voice/voice';
 
 
 
@@ -32,74 +32,33 @@ export default function HomeScreen({ navigation }) {
   } = useContext(AppointmentsContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredAppointments, setFilteredAppointments] = useState([]);
-  const [isListening, setIsListening] = useState(false);
- // const [pesquisar, setPersquisar] = useState('');
- 
- /*function onSpeechResults({ value }: SpeechResultsEvent) {
- 
-}*/
-
- useEffect(() => {
-  Voice.onSpeechResults = onSpeechResults;  
-  Voice.onSpeechStart = () => setIsListening(true);
-
-    return () => {
-      Voice.destroy().then(Voice.removeAllListeners);
-    };
-  }, []);
-
-  const onSpeechResults = ({ value }) => {
-  /*  const spokenText = event.value[0];
-    setSearchTerm(spokenText);
-    handleSearch(spokenText);
-    */
-   console.log('Speech results:', value);
    
-  };
-  const startVoiceRecognition = async () => {
-    try {
-      setSearchTerm('');
-      setIsListening(true);
-      await Voice.start('pt-br');
-    } catch (error) {
-      await Voice.stop();
-      setIsListening(false);
-      console.error('Error starting voice recognition:', error);
-      Alert.alert('Erro ao iniciar reconhecimento de voz', error.message);
-    }
-  };
-
+  
   // Filtra e busca agendamentos
   /*useEffect(() => {
-   // getAppoints();
+    //getAppoints();
     let result = appointments;
   
     // Aplica busca por client, tema ou data
-    if (searchTerm.length > 0) {
-     // const term = searchTerm.toLowerCase();
+    if (searchTerm.length !== 0) {
+      const term = searchTerm.toLowerCase();
       result = result.filter(app => 
-        (app.client && app.client.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (app.tema && app.tema.toLowerCase().includes(searchTerm.toLowerCase())) || 
-        (app.atendente && app.atendente.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (app.data_evento && app.data_evento.toLowerCase().includes(searchTerm.toLowerCase()))
+        (app.client && app.client.toLowerCase().includes(term)) ||
+        (app.tema && app.tema.toLowerCase().includes(term)) || 
+        (app.atendente && app.atendente.toLowerCase().includes(term)) ||
+        (app.data_evento && app.data_evento.toLowerCase().includes(term))
       );
     }
-    setSearchTerm(result);
+    setFilteredAppointments(result);
   }, [appointments, searchTerm]);*/
 
-  const getAppoints = async(newText) => {
+  const getAppoints = async() => {
     try {
-      const response = await axios.get(`https://test-api.loca.lt/agenda`,{
-        params: {
-          search: newText || '',
-          status: 'pendente', // ou 'confirmado', 'concluido', 'cancelado',
-          client: newText || '',
-          tema: newText || '',
-      },
-    });
+      const response = await axios.get(`https://test-api.loca.lt/agendamentos/pag`);
       const { agendamentos } = response.data;
-      setAppointments(agendamentos || []);
-      setFilteredAppointments(agendamentos || []);
+      setAppointments(agendamentos);
+     // setFilteredAppointments(agendamentos); // Inicializa com todos os agendamentos
+      console.log('agendamentos', agendamentos);
       
     } catch (error) {
       if (error.response?.data.error) {
@@ -119,13 +78,13 @@ export default function HomeScreen({ navigation }) {
     setPersquisar(prev => ({ ...prev, [name]: value }));
   };*/
 
-/*const handleSearch = (text) => {
+const handleSearch = (text) => {
   
   if (!text) {
     setFilteredAppointments([]); // Limpa os agendamentos filtrados
     setSearchTerm(''); // Limpa o termo de pesquisa
-   // getAppoints(); // Limpa a pesquisa e recarrega os agendamentos
-   return; }
+      return;
+  }
   // Filtra os agendamentos com base no termo de pesquisa
   //setSearchTerm(text);
   //const search = searchTerm.toLowerCase();
@@ -135,10 +94,10 @@ export default function HomeScreen({ navigation }) {
     item.tema.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.data_evento.toLowerCase().includes(searchTerm.toLowerCase())) 
      });
-  setSearchTerm(text);
-setFilteredAppointments(filtered);
-  getAppoints(); // Recarrega os agendamentos filtrados
-};*/
+     setFilteredAppointments(filtered);
+     setSearchTerm(text);
+  //getAppoints(); // Recarrega os agendamentos filtrados
+};
 
   const handleNewAppointment = () => {
     if (appointments.length >= 10) {
@@ -155,11 +114,6 @@ setFilteredAppointments(filtered);
     }
   };
 
-
-
- /* useEffect(()=>{
-    handleSearch();
-  },[]);*/
 
  const renderAppointmentItem = ({ item }) => (
 
@@ -192,7 +146,7 @@ const getStatusColor = (status) => {
   if (isLoading && appointments.length === 0) {
     return <ActivityIndicator size="large" style={styles.loader} />;
   }
-  const upcomingAppointments = appointments.slice(0, 3);
+const upcomingAppointments = appointments.slice(0, 3);
 
   return (
     <ScrollView
@@ -247,28 +201,14 @@ const getStatusColor = (status) => {
             placeholder="Campo de pesquisa!"
             placeholderTextColor="#999"
             value={searchTerm}
-            onChangeText={(newText) => {
-              setSearchTerm(newText); 
-              handleSearch(newText);
-            }}
+            onChangeText={handleSearch}
+   // onSubmitEditing={() => getAppoints(searchTerm)}
+           
             keyboardType='default' 
-            returnKeyType='search'
             autoCorrect={false}
             clearButtonMode='while-editing'            
             />
-            <Pressable 
-              style={styles.clearButton}
-              onPress={() => {startVoiceRecognition();
-               // setSearchTerm('');
-               // setFilteredAppointments(appointments);
-              }}>
-              <Feather name="mic" size={24} color="#fff" />
-            </Pressable>
-            <Button
-              title={isListening ? "Ouvindo" : "Buscar por voz"}
-              onPress={isListening ? Voice.stop : startVoiceRecognition}
-              color="#6200ee"
-            />
+           
             </View>
         </View>
 
