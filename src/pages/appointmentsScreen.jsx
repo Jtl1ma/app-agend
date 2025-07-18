@@ -44,9 +44,9 @@ const AppointmentsScreen = ({ navigation }) => {
    // loadMoreAppointment(currentPage); //Carrega a primeira pag ao iniciar
  // }, [currentPage]);
 
-  const handleEdit = async () => {
+  const handleEdit = async ({item}) => {
     //navigation.replace('Edit');
-    navigation.navigate('Update');
+    navigation.navigate('serviceAppointment', {id:item.id});
   };
     const renderAppointment = ({ item }) => {
     return (
@@ -68,7 +68,7 @@ const AppointmentsScreen = ({ navigation }) => {
 
 
 
-        <View style={styles.Buttons}>
+        {/*<View style={styles.Buttons}>
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={() => handleEdit()}
@@ -82,7 +82,7 @@ const AppointmentsScreen = ({ navigation }) => {
           >
           <Text style={styles.cancelButtonText}>Cancelar</Text>
         </TouchableOpacity>
-        </View>
+        </View>*/}
       </View>
     )};
   

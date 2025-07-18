@@ -34,10 +34,8 @@ const ScheduleScreen = ({ navigation }) => {
     
   });
   const [selectedDate, setSelectedDate] = useState('');
-  //const [status, setStatus] = useState('');
   
   const { addAppointment } = useContext(AppointmentsContext);
-
   
   const handleChange = (name, value) => {
     setForm(prev => ({ ...prev, [name]: value }));
@@ -113,7 +111,6 @@ const ScheduleScreen = ({ navigation }) => {
     setSelectedDate('');
   };
 
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -150,13 +147,15 @@ const ScheduleScreen = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Nome do Cliente *"
+            placeholderTextColor="#999"
             value={form.client}
             onChangeText={(text) => handleChange('client', text)}
-            autoCapitalize="none"
+            autoCapitalize="none"            
           />
           <TextInput
             style={styles.input}
             placeholder="Contato *"
+            placeholderTextColor="#999"
             value={form.contato}
             onChangeText={(text) => handleChange('contato', text)}
             keyboardType="phone-pad"
@@ -168,13 +167,15 @@ const ScheduleScreen = ({ navigation }) => {
           
           <TextInput
             style={styles.input}
-            placeholder="Tema"
+            placeholder="Tema *"
+            placeholderTextColor="#999"
             value={form.tema}
             onChangeText={(text) => handleChange('tema', text)}
           />
           <TextInput
             style={styles.input}
-            placeholder="Modelo"
+            placeholder="Modelo *"
+            placeholderTextColor="#999"
             value={form.modelo}
             onChangeText={(text) => handleChange('modelo', text)}
           />
@@ -185,20 +186,23 @@ const ScheduleScreen = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Valor Total *"
+            placeholderTextColor="#999"
             value={form.valor}
             onChangeText={(text) => handleChange('valor', formatCurrency(text))}
             keyboardType="numeric"
           />
           <TextInput
             style={styles.input}
-            placeholder="Sinal"
+            placeholder="Sinal de Entrada *"
+            placeholderTextColor="#999"
             value={form.sinal_entrada}
             onChangeText={(text) => handleChange('sinal_entrada', formatCurrency(text))}
             keyboardType="numeric"
           />
           <TextInput
             style={styles.input}
-            placeholder="Resta Pagar"
+            placeholder="Resta Pagar *"
+            placeholderTextColor="#999"
             value={form.resta_pagar}
             onChangeText={(text) => handleChange('resta_pagar', formatCurrency(text))}
             keyboardType="numeric"
@@ -209,19 +213,23 @@ const ScheduleScreen = ({ navigation }) => {
           <Text style={styles.sectionTitle}>Outras Informações</Text>
           <TextInput
             style={styles.input}
-            placeholder="Atendente"
+            placeholder="Atendente *"
+            placeholderTextColor="#999"
             value={form.atendente}
             onChangeText={(text) => handleChange('atendente', text)}
           />
           <TextInput
             style={styles.input}
-            placeholder="Local do Evento"
+            placeholder="Local do Evento *"
+            placeholderTextColor="#999"
             value={form.local_evento}
             onChangeText={(text) => handleChange('local', text)}
+            autoCapitalize="none"
           />
           <TextInput
             style={[styles.input, styles.textArea]}
-            placeholder="Observações"
+            placeholder="Observações *"
+            placeholderTextColor="#999"
             value={form.observacao}
             onChangeText={(text) => handleChange('observacao', text)}
             multiline
@@ -245,13 +253,14 @@ const ScheduleScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
-    paddingLeft: 20,
-    paddingRight: 20,
+   // backgroundColor: '#f8f9fa',
+   // paddingLeft: 20,
+   // paddingRight: 20,
   },
   scrollContainer: {
-    padding: 20,
-    paddingBottom: 40,
+    padding: 25,
+   // paddingBottom: 40,
+    
   },
   title: {
     fontSize: 24,
@@ -261,31 +270,36 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   section: {
-    marginBottom: 25,
+    marginBottom: 15,
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    //padding: 5,
+   // shadowColor: '#000',
+   // shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+    paddingHorizontal: 10,
+   
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 15,
     color: '#3b82f6',
+    borderBottomColor: '#e9ecef',
   },
   input: {
+    fontWeight: '600',
     height: 50,
     borderWidth: 1,
     borderColor: '#e9ecef',
     borderRadius: 8,
-    paddingHorizontal: 15,
-    marginBottom: 15,
-    fontSize: 16,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    fontSize: 15,
     backgroundColor: '#f8f9fa',
+        
   },
   textArea: {
     height: 100,

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { AuthContext } from '../../src/context/authContext';
 
 const ProfileScreen = ({ navigation }) => {
-  const { user, logout } = useContext(AuthContext);;
+  const { user, logout } = useContext(AuthContext);
 
   return (
     <View style={styles.container}>

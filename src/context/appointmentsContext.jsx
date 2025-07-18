@@ -7,6 +7,7 @@ export const AppointmentsContext = createContext();
 
 export function AppointmentsProvider(props) {
   const [appointments, setAppointments] = useState([]);
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -252,6 +253,8 @@ Alert.alert('Sucesso', 'Agendamento adicionado com sucesso!');
       value={{ 
         appointments,
         setAppointments,
+        filteredAppointments,
+        setFilteredAppointments,
         loadingMore, 
         refreshing, 
         hasMore, 

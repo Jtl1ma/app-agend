@@ -26,13 +26,13 @@ export default function HomeScreen({ navigation }) {
   const { 
     appointments,
     setAppointments,
+    filteredAppointments,
+    setFilteredAppointments,
     loadingMore, 
     isLoading, 
     refreshAppointments 
   } = useContext(AppointmentsContext);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredAppointments, setFilteredAppointments] = useState([]);
-   
   
   // Filtra e busca agendamentos
   /*useEffect(() => {
@@ -56,10 +56,7 @@ export default function HomeScreen({ navigation }) {
     try {
       const response = await axios.get(`https://test-api.loca.lt/agendamentos/pag`);
       const { agendamentos } = response.data;
-      setAppointments(agendamentos);
-     // setFilteredAppointments(agendamentos); // Inicializa com todos os agendamentos
-      console.log('agendamentos', agendamentos);
-      
+      setAppointments(agendamentos); 
     } catch (error) {
       if (error.response?.data.error) {
         Alert.alert('Erro: ' + error.response?.data.error);
@@ -72,31 +69,29 @@ export default function HomeScreen({ navigation }) {
     getAppoints();
   },[]);
 
-
-
-/*const handleChange = (name, value) => {
-    setPersquisar(prev => ({ ...prev, [name]: value }));
-  };*/
-
+  // Função para limpar o termo de pesquisa e os agendamentos filtrados
+  const clearSearch = () => {
+    setSearchTerm(''); // Limpa o termo de pesquisa
+    setFilteredAppointments([]); // Limpa os agendamentos filtrados
+  };
 const handleSearch = (text) => {
   
   if (!text) {
-    setFilteredAppointments([]); // Limpa os agendamentos filtrados
-    setSearchTerm(''); // Limpa o termo de pesquisa
+    clearSearch(); // Limpa a pesquisa se o texto estiver vazio
       return;
   }
   // Filtra os agendamentos com base no termo de pesquisa
-  //setSearchTerm(text);
-  //const search = searchTerm.toLowerCase();
+  
+  const term = searchTerm.toLowerCase();
    const filtered = appointments.filter(item =>{
   return (
-    item.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.tema.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.data_evento.toLowerCase().includes(searchTerm.toLowerCase())) 
+    item.client.toLowerCase().includes(term) ||
+    item.tema.toLowerCase().includes(term) ||
+    item.data_evento.toLowerCase().includes(term)) 
      });
      setFilteredAppointments(filtered);
      setSearchTerm(text);
-  //getAppoints(); // Recarrega os agendamentos filtrados
+  getAppoints(); // Recarrega os agendamentos filtrados
 };
 
   const handleNewAppointment = () => {
@@ -119,7 +114,8 @@ const handleSearch = (text) => {
 
     <TouchableOpacity 
       style={styles.itemContainer}
-      onPress={() => navigation.navigate('Update',{id: item.id})}
+      onPress={() => navigation.navigate('serviceAppointment',{id: item.id, 
+       client: item.client, contato: item.contato})}
     >
       <Text style={styles.itemTitle}>{item.tema}</Text>
       <Text style={styles.itemClient}>{item.client}</Text>
@@ -139,7 +135,7 @@ const getStatusColor = (status) => {
       case 'confirmado': return 'green';
       case 'concluido': return 'blue';
       case 'cancelado': return 'red';
-      default: return 'yellow'; // Pendente
+      default: return 'orange'; // Pendente
     }
   };
 
@@ -157,10 +153,26 @@ const upcomingAppointments = appointments.slice(0, 3);
           onRefresh={refreshAppointments}
       />}
     >
-      <Text style={styles.title}>Bem-vindo!</Text>
+      <Text style={styles.title}>Dashboard</Text>
+      <Text style={styles.subTitle}>Bem-vindo ao seu painel de controle!</Text>
       
+
+{ /* Card de agendamentos de Hoje */}
+
+{ /* Card de agendamentos da semana */}
+
+
       <View style={styles.card}>
       <Text style={styles.cardTitle}>Próximos Agendamentos</Text>
+      <Text style={styles.detailText}>Mês: 
+        {upcomingAppointments[0]
+       ? new Date(upcomingAppointments[0].data_evento).toLocaleDateString('pt-br', {
+                   // weekday: 'short',
+                   // day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                  }) : ''}
+                </Text>
         
         {upcomingAppointments.length === 0 ? (
           <View style={styles.emptyContainer}>
@@ -170,8 +182,10 @@ const upcomingAppointments = appointments.slice(0, 3);
           </View>
         ) : (
          upcomingAppointments.map(app => (
+              
             <View key={app.id} style={styles.appointmentItem}>
-              <TouchableOpacity onPress={()=> navigation.navigate('Update')}>
+              
+              {/*<TouchableOpacity onPress={()=> navigation.navigate('Update')}>*/}
               <Text style={styles.appointmentText}>Cliente: {app.client}</Text>
               <Text style={styles.appointmentText}>Contato: {app.contato}</Text>
               <Text style={styles.appointmentText}>Tema: {app.tema}</Text>
@@ -180,7 +194,7 @@ const upcomingAppointments = appointments.slice(0, 3);
               </Text>
               <Text style={styles.appointmentText}>Local: {app.local_evento}</Text>
               <Text style={styles.appointmentStatus}>{app.status}</Text>
-        </TouchableOpacity>
+        {/*</TouchableOpacity>*/}
             </View>
           ))
         )}
@@ -198,7 +212,7 @@ const upcomingAppointments = appointments.slice(0, 3);
         {/*<Ionicons name='search' size={20} color='#999' style={styles.icon} />*/}
                 
         <TextInput style={styles.input}
-            placeholder="Campo de pesquisa!"
+            placeholder="Pesquisar aqui..."
             placeholderTextColor="#999"
             value={searchTerm}
             onChangeText={handleSearch}
@@ -214,6 +228,7 @@ const upcomingAppointments = appointments.slice(0, 3);
 
  {/* Lista de agendamentos filtrados */}
             {filteredAppointments.length > 0 ? (
+               
                 <View style={styles.listContainer}>
 
                   <FlatList data={filteredAppointments}
@@ -232,13 +247,7 @@ const upcomingAppointments = appointments.slice(0, 3);
                   </View>
                   )}
 
-      <TouchableOpacity 
-        style={styles.scheduleButton}
-        onPress={handleNewAppointment}>
-        <Text style={styles.scheduleButtonText}>
-          <Ionicons name="add-circle-outline" size={18} />  Agendar Novo Cliente!
-        </Text>
-      </TouchableOpacity>
+      
     </ScrollView>
   );
   
@@ -248,6 +257,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+  
   },
   listContainer: {
     flex: 1,
@@ -270,6 +280,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
   },
+  subTitle: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 20,
+  },
   card: {
     backgroundColor: 'white',
     padding: 20,
@@ -286,9 +301,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 18,
   },
+  detailText: {
+    marginLeft: 8,
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#333',
+  },
   emptyContainer: {
     alignItems: 'center',
-    paddingVertical: 30,
+    paddingVertical: 2,
+   // marginTop: 0,
   },
   emptyText: {
     textAlign: 'center',
@@ -335,15 +357,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#6200ee',
     padding: 10,
     borderRadius: 10,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
+  //  alignItems: 'center',
+  //  flexDirection: 'row',
+   // justifyContent: 'center',
   },
   scheduleButtonText: {
     color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginLeft: 5,
+    fontSize: 18,
+  //  fontWeight: 'bold',
+   // marginLeft: 5,
   },
  input: {
     borderWidth: 1.5,
@@ -351,7 +373,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 30,
     backgroundColor: '#f8f9fa',
-   // height: 35,
+    height: 35,
     width: 220
   },
   seAllButton: {

@@ -76,7 +76,7 @@ const UpdateAppointments = ({ route, navigation }) => {
   }, [route.params]);
 
   // Filtra e busca agendamentos
-  useEffect(() => {
+  /*useEffect(() => {
     let result = appointments;
     
     // Aplica filtro por status
@@ -94,7 +94,33 @@ const UpdateAppointments = ({ route, navigation }) => {
       );
     }
     setFilteredAppointments(result);
-  }, [appointments, searchTerm, statusFilter]);
+  }, [appointments, searchTerm, statusFilter]);*/
+
+  const handleSearch = (text) => {
+let filtered = appointments
+    // Aplica filtro por status
+    if (statusFilter !== 'all') {
+  filtered = filterAppointmentsByStatus(statusFilter);
+    }
+  
+  if (!text) {
+    setFilteredAppointments([]); // Limpa os agendamentos filtrados
+    setSearchTerm(''); // Limpa o termo de pesquisa
+      return;
+  }
+  // Filtra os agendamentos com base no termo de pesquisa
+  //setSearchTerm(text);
+  //const search = searchTerm.toLowerCase();
+    filtered = filtered.filter(item =>{
+  return (
+    item.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.tema.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.data_evento.toLowerCase().includes(searchTerm.toLowerCase())) 
+     });
+     setFilteredAppointments(filtered);
+     setSearchTerm(text);
+  //getAppoints(); // Recarrega os agendamentos filtrados
+};
 
   const handleLoadMore = () => {
     if (hasMore && !loadingMore) {
@@ -170,6 +196,7 @@ const UpdateAppointments = ({ route, navigation }) => {
     
     try {
       await updateAppointment(selectedAppointment.id, formData);
+      console.log('Agendamento atualizado:', selectedAppointment.id);
       Alert.alert('Sucesso', 'Agendamento atualizado com sucesso');
       setEditMode(false);
       refreshAppointments();
@@ -237,29 +264,16 @@ const UpdateAppointments = ({ route, navigation }) => {
           style={[styles.searchInput, { marginTop: 0 }]}
           placeholder="Buscar por tema, cliente ou data..."
           value={searchTerm}
-          onChangeText={setSearchTerm}
+          onChangeText={handleSearch}
         />
 
-         {/* <TextInput
-            style={styles.searchInput}
-            placeholder="Digite o ID"
-            value={searchId}
-            onChangeText={setSearchId}
-            keyboardType="numeric"
-          /> 
-          <TouchableOpacity 
-            style={styles.searchButton} 
-            onPress={handleFilterByStatus}
-          >
-            <Text style={styles.buttonText}>Buscar</Text>
-          </TouchableOpacity>*/}
-        {/*</View>*/}
+         
         </View>
         
         
       {/*</View>*/}
 
-      {/* Seção de filtro */}
+      {/* Seção de filtro 
       <View style={styles.filterSection}>
         <Text style={styles.sectionTitle}>Filtrar por Status</Text>
         <View style={styles.filterRow}>
@@ -278,7 +292,7 @@ const UpdateAppointments = ({ route, navigation }) => {
             onPress={handleFilterByStatus}>
             <Text style={styles.buttonText}>Filtrar</Text>
           </TouchableOpacity>
-        </View>
+        </View>*/}
         {/*
           {filteredAppointments.length > 0 && (
                   <View style={styles.filterResults}>
@@ -295,9 +309,11 @@ const UpdateAppointments = ({ route, navigation }) => {
                   </View>
                 )} 
         */}
-      </View>
+      {/*</View>*/}
 
       {/* Lista de agendamentos */}
+      {filteredAppointments.length > 0 ? (
+       
       <View style={styles.listContainer}>
         <FlatList
           data={filteredAppointments}
@@ -311,6 +327,11 @@ const UpdateAppointments = ({ route, navigation }) => {
           contentContainerStyle={{ paddingBottom: 20 }}
         />
       </View>
+      ) : (
+        <View style={{ padding: 20, alignItems: 'center' }}>
+          <Text>Nenhum agendamento pesquisado!</Text>
+        </View>
+      )}
 
       {/* Formulário de edição */}
       {selectedAppointment && (
@@ -399,10 +420,10 @@ const UpdateAppointments = ({ route, navigation }) => {
               />
 
               <Text style={styles.label}>Status</Text>
-              <Picker
-                selectedValue={formData.status}
-                style={styles.input}
-                onValueChange={(itemValue) => handleChange('status', itemValue)}
+              <Picker selectedValue={statusFilter}
+               // style={styles.input}
+                onValueChange={(itemValue, itemIndex) => { 
+                  setStatusFilter('status', itemValue)}}
               >
                 <Picker.Item label="Pendente" value="pendente" />
                 <Picker.Item label="Confirmado" value="confirmado" />
@@ -499,10 +520,12 @@ const styles = StyleSheet.create({
   searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    
   },
   filterRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    
   },
   searchInput: {
    // flex: 1,
@@ -510,11 +533,12 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     borderRadius: 4,
     padding: 5,
-    height: 35
+    height: 35,
   },
   picker: {
     flex: 1,
    // height: 30,
+    
   },
   searchButton: {
     backgroundColor: '#007bff',
