@@ -23,9 +23,9 @@ const MenuScreen = ({ navigation }) => {
     
           <View style={styles.detailsContainer}>
             <View style={styles.detailRow}>
-                <TouchableOpacity onPress={() => navigation.navigate('Inicio')}>
-              <MaterialIcons name="home" size={25} color="#4b5563" />
-              <Text style={styles.detailText}>Inicio</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Painel')}>
+              <MaterialIcons name="home" size={25} color="#4b5563"  />
+              <Text style={styles.detailText}>Painel-Inicial</Text>
                 </TouchableOpacity>
             </View>
             
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     
   card: {
   
-    backgroundColor: 'white',
+    backgroundColor: '#E3F2FD',
     borderRadius: 12,
     padding: 16,
    // marginBottom: 12,

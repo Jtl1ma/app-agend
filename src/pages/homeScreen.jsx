@@ -1,21 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { 
-  Button,
-  FlatList,
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  TextInput,
-  ScrollView,
-  RefreshControl,
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  
-} from 'react-native';
-import { Feather, Ionicons } from '@expo/vector-icons';
-import { format, set, parseISO } from 'date-fns';
+import { FlatList, View, Text, StyleSheet, TouchableOpacity, TextInput, 
+  ScrollView, RefreshControl, ActivityIndicator, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { AppointmentsContext } from '../context/appointmentsContext';
 import axios from "axios";
@@ -23,34 +10,12 @@ import axios from "axios";
 
 
 export default function HomeScreen({ navigation }) {
-  const { 
-    appointments,
-    setAppointments,
-    filteredAppointments,
-    setFilteredAppointments,
-    loadingMore, 
-    isLoading, 
-    refreshAppointments 
-  } = useContext(AppointmentsContext);
+  const { appointments, setAppointments, filteredAppointments,
+    setFilteredAppointments, loadingMore, isLoading, 
+    refreshAppointments } = useContext(AppointmentsContext);
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Filtra e busca agendamentos
-  /*useEffect(() => {
-    //getAppoints();
-    let result = appointments;
-  
-    // Aplica busca por client, tema ou data
-    if (searchTerm.length !== 0) {
-      const term = searchTerm.toLowerCase();
-      result = result.filter(app => 
-        (app.client && app.client.toLowerCase().includes(term)) ||
-        (app.tema && app.tema.toLowerCase().includes(term)) || 
-        (app.atendente && app.atendente.toLowerCase().includes(term)) ||
-        (app.data_evento && app.data_evento.toLowerCase().includes(term))
-      );
-    }
-    setFilteredAppointments(result);
-  }, [appointments, searchTerm]);*/
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const getAppoints = async() => {
     try {
@@ -153,9 +118,9 @@ const upcomingAppointments = appointments.slice(0, 3);
           onRefresh={refreshAppointments}
       />}
     >
-      <Text style={styles.title}>Dashboard</Text>
+    {/*  <Text style={styles.title}>Dashboard</Text>
       <Text style={styles.subTitle}>Bem-vindo ao seu painel de controle!</Text>
-      
+*/}      
 
 { /* Card de agendamentos de Hoje */}
 
@@ -163,30 +128,31 @@ const upcomingAppointments = appointments.slice(0, 3);
 
 
       <View style={styles.card}>
-      <Text style={styles.cardTitle}>Próximos Agendamentos</Text>
-      <Text style={styles.detailText}>Mês: 
-        {upcomingAppointments[0]
+      <Text style={styles.cardTitle}>Agendamentos final de semana.</Text>
+      <Text style={styles.detailText}>Total: ({ upcomingAppointments.length}) 
+        {/*{upcomingAppointments[0]
        ? new Date(upcomingAppointments[0].data_evento).toLocaleDateString('pt-br', {
                    // weekday: 'short',
                    // day: '2-digit',
                     month: '2-digit',
                     year: 'numeric'
                   }) : ''}
-                </Text>
+*/}                </Text>
         
         {upcomingAppointments.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Ionicons name="calendar-outline" size={50} color="#ccc" />
             <Text style={styles.emptyText}>Nenhum agendamento por enquanto!</Text>
-            <Text style={styles.emptySubtext}>Toque no botão abaixo para agendar</Text>
+            <Text style={styles.emptySubtext}>Toque no botão para agendar</Text>
           </View>
         ) : (
          upcomingAppointments.map(app => (
               
             <View key={app.id} style={styles.appointmentItem}>
               
-              {/*<TouchableOpacity onPress={()=> navigation.navigate('Update')}>*/}
+       <TouchableOpacity onPress={()=> navigation.navigate('serviceAppointment', { id: app.id, client: app.client, contato: app.contato })}>
               <Text style={styles.appointmentText}>Cliente: {app.client}</Text>
+        </TouchableOpacity>
               <Text style={styles.appointmentText}>Contato: {app.contato}</Text>
               <Text style={styles.appointmentText}>Tema: {app.tema}</Text>
               <Text style={styles.appointmentDate}>
@@ -194,7 +160,6 @@ const upcomingAppointments = appointments.slice(0, 3);
               </Text>
               <Text style={styles.appointmentText}>Local: {app.local_evento}</Text>
               <Text style={styles.appointmentStatus}>{app.status}</Text>
-        {/*</TouchableOpacity>*/}
             </View>
           ))
         )}
@@ -211,7 +176,7 @@ const upcomingAppointments = appointments.slice(0, 3);
         )}
         {/*<Ionicons name='search' size={20} color='#999' style={styles.icon} />*/}
                 
-        <TextInput style={styles.input}
+       {/* <TextInput style={styles.input}
             placeholder="Pesquisar aqui..."
             placeholderTextColor="#999"
             value={searchTerm}
@@ -222,12 +187,29 @@ const upcomingAppointments = appointments.slice(0, 3);
             autoCorrect={false}
             clearButtonMode='while-editing'            
             />
-           
+*/}           
             </View>
         </View>
 
+         <Button title="Selecionar Data" onPress={() => setShowDatePicker(true)} />
+      <Text>Data selecionada: {date.toLocaleDateString()}</Text>
+      
+      {showDatePicker && (
+        <DateTimePicker
+          value={date}
+          mode="date"
+          display="default"
+          onChange={(event, selectedDate) => {
+            setShowDatePicker(false);
+            if (selectedDate) {
+              setDate(selectedDate);
+            }
+          }}
+        />
+      )}
+
  {/* Lista de agendamentos filtrados */}
-            {filteredAppointments.length > 0 ? (
+           {/* {filteredAppointments.length > 0 ? (
                
                 <View style={styles.listContainer}>
 
@@ -246,7 +228,7 @@ const upcomingAppointments = appointments.slice(0, 3);
                   <Text style={styles.emptySubtext}>Tente pesquisar por cliente, tema ou data</Text>
                   </View>
                   )}
-
+*/}
       
     </ScrollView>
   );
@@ -256,7 +238,8 @@ const upcomingAppointments = appointments.slice(0, 3);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 15,
+    paddingTop: 0,
   
   },
   listContainer: {

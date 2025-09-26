@@ -28,9 +28,9 @@ function MainTabs() {
           let iconName;
 
           if (route.name === 'Painel') {
-            iconName = focused ? 'apps-sharp' : 'apps-sharp';
+            iconName = focused ? 'apps-sharp' : 'apps-sharp';/*
           } else if (route.name === 'Inicio') {
-            iconName = focused ? 'home' : 'home-outline';
+            iconName = focused ? 'home' : 'home-outline';*/
           } else if (route.name === 'Agendar') {
             iconName = focused ? 'calendar' : 'calendar-outline';
           } else if (route.name === 'Agendamentos') {
@@ -50,7 +50,7 @@ function MainTabs() {
       })}
     >
       <Tab.Screen name="Painel" component={Dashboard} />
-      <Tab.Screen name="Inicio" component={HomeScreen} />
+      {/*<Tab.Screen name="Inicio" component={HomeScreen} />*/}
       <Tab.Screen name="Agendar" component={ScheduleScreen} />
       <Tab.Screen name="Atualizar" component={UpdateAppointments} />
       <Tab.Screen name="Agendamentos" component={AppointmentsScreen} />
@@ -72,6 +72,16 @@ export default function AppNavigator() {
           options={{ headerShown: false }} 
         />
         
+        <Stack.Screen name="Inicio" component={HomeScreen} 
+         options={{
+            headerTitle: "Principal",
+            headerTitleAlign: "center",
+            headerShadowVisible: false,
+            headerTintColor: "white",
+            headerStyle: {
+                backgroundColor: "blue"
+            }
+        }}/>
         <Stack.Screen name="serviceAppointment" component={ServiceAppointmentScreen} 
          options={{
             headerTitle: "Serviço Agendado",

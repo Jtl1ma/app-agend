@@ -11,9 +11,9 @@ import icons from "../consts/icons.js";
 
 
 const EditCard = () => {
-  const { filteredAppointments } = useContext(AppointmentsContext);
+  const { appointments } = useContext(AppointmentsContext);
 //const [selectedAppointment, setSelectedAppointment] = useState(null);
-const [statusFilter, setStatusFilter] = useState('all');
+const [statusFilter, setStatusFilter] = useState('Pendente');
 const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
     client: '',
@@ -56,12 +56,12 @@ const [editMode, setEditMode] = useState(false);
      <ScrollView contentContainerStyle={styles.scrollContainer}>
 
      <View style={styles.banner}>
-        <Image source={filteredAppointments[0].id == "M" ? icons.cliente : icons.clientefeliz} />
-        <Text style={styles.text}>Cliente: {filteredAppointments[0].client} </Text>
-        <Text style={styles.text}>Contato: {filteredAppointments[0].contato} </Text>
+        <Image source={appointments.id == "M" ? icons.cliente : icons.clientefeliz} />
+        <Text style={styles.text}>Cliente: {appointments.client} </Text>
+        <Text style={styles.text}>Contato: {appointments.contato} </Text>
     </View>
 
- {filteredAppointments.map(app => (
+ {appointments.map(app => (
  
       <View style={styles.card}
       key={app.id}
@@ -218,12 +218,12 @@ const [editMode, setEditMode] = useState(false);
    container: {
      flex: 1,
    //  padding: 15,
-     backgroundColor: '#f5f5f5',
+     backgroundColor: '#dbeafe',
    },
    banner: {
         alignItems: "center",
         backgroundColor: "blue",
-        justifyContent: "center",
+     // justifyContent: "center",
         paddingTop: 12,
         paddingBottom: 25
     },
@@ -235,8 +235,8 @@ const [editMode, setEditMode] = useState(false);
         marginTop: 8
     },
    scrollContainer: {
-     padding: 20,
-     paddingBottom: 40,
+   //  padding: 20,
+    // paddingBottom: 40,
    },
    sectionTitle: {
      fontSize: 18,
@@ -312,7 +312,7 @@ const [editMode, setEditMode] = useState(false);
      backgroundColor: '#28a745'
    },
    buttonText: {
-     color: '#000',
+     color: '#fff',
      fontWeight: 'bold',
    },
    label: {

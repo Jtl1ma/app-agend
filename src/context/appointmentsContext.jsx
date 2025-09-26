@@ -2,18 +2,22 @@
 import React, { createContext, useState, useCallback, useEffect } from 'react';
 import { Alert } from 'react-native';
 import axios from "axios";
+//import { id } from 'date-fns/locale';
 
 export const AppointmentsContext = createContext();
 
 export function AppointmentsProvider(props) {
   const [appointments, setAppointments] = useState([]);
+  const [atendentesList, setAtendentesList] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [filteredAppointments, setFilteredAppointments] = useState([]);
+  const [error, setError] = useState(null);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
- // const [loadMoreAppointment, setLoadMoreAppointment] = useState();
-  const [loadAppointments, setLoadAppointments] = useState();
   const [refreshing, setRefreshing] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+  const [loadAppointments, setLoadAppointments] = useState();
+  const [loadMoreAppointment, setLoadMoreAppointment] = useState();
   const pageSize = 10;
 
  const loadAppointment = useCallback(async(pageNumber = 1, isRefresh = false)=>{
@@ -28,9 +32,12 @@ export function AppointmentsProvider(props) {
         // outros parametros de filtro podem ser add aqui  
       };
       
-      const response = await axios.get('https://test-api.loca.lt/agendamentos/pag', { params });
-      const newAppointments = response.data.agendamentos || [];
-      const totalCount = response.data.totals || 0;
+     /* const response = await axios.get('https://test-api.loca.lt/agenda', { params });
+     // const newAppointments = response.data.agendamentos || [];
+      const newAppointments = response.data;*/
+     // console.log('Novos agendamentos:', newAppointments);
+    //  const totalCount = response.data.totals || 0;
+    //  const result = response.data.faturamento || 0;
       /*const totalPag = response.data.totalPages || 0;
       const totalDay = response.data.totalsDia || 0;
       const totalMonth = response.data.totalsMes || 0;*/
@@ -48,32 +55,34 @@ export function AppointmentsProvider(props) {
                 totalPages: Math.ceil(totals / parseInt(limit as string)),
                 faturamento: , 
       */
+    // console.log('Faturamento:', result);
 
-      if (isRefresh || pageNumber === 1) {
+/*      if (isRefresh || pageNumber === 1) {
         setAppointments(newAppointments);
       }else {
         setAppointments(prev => [...prev, ...newAppointments]);
-      }
+      }*/
 
-      setHasMore(pageNumber * pageSize < totalCount);
+     /* setHasMore(pageNumber * pageSize < totalCount);
       setPage(pageNumber);
       
       // Atualiza o cursor se sua API usar essa abordagem
-     /* if (response.data.nextCursor) {
+      if (response.data.nextCursor) {
         setCursor(response.data.nextCursor);
       }*/
 
-    } catch (error) {
-      console.error('Erro ao buscar agendametos:', error);
-      Alert.alert('Erro', 'Não foi possivel carregar os dados');
-    } finally {
+   }// catch (error) {
+     // console.error('Erro ao buscar agendametos:', error);
+      //Alert.alert('Erro', 'Não foi possivel carregar os dados');
+   // } 
+    finally {
       isRefresh ? setRefreshing(false) : setLoadingMore(false);
     }
   }, [loadingMore, refreshing]);
   
  
   // Carregar mais itens (proxima pag)
- /*const loadMoreAppointment = useCallback(async () => {
+/* const loadMoreAppointment = useCallback(async () => {
   await loadAppointments(page + 1);
 
  }, [page, loadAppointments]);*/
@@ -96,20 +105,24 @@ export function AppointmentsProvider(props) {
    // const res = await axios.post('https://test-api.loca.lt/agendamento', newAppointment);
    // setAppointments(prev => [res.data, ...prev]);
    // return res.data;
-   setAppointments([...appointments, {
-      ...newAppointment,
-      id: Date.now().toString(),
+   const generatedId = Math.random().toString(36).substr(2, 9); // Gera um ID único simples
+   const appointmentToAdd = {
+     ...newAppointment,
+      id: generatedId,
       createdAt: new Date().toISOString()
-    }]);
-Alert.alert('Sucesso', 'Agendamento adicionado com sucesso!');
-    return newAppointment;
+    };
+
+   setAppointments([...appointments, appointmentToAdd]);
+   //console.log('Agendamento adicionado com sucesso:', generatedId);
+Alert.alert('Sucesso', 'Agendamento adicionado com sucesso!', generatedId);
+    return appointmentToAdd;
   } catch (error) {
     console.error('Erro ao adicionar agendameto:', error);
     throw error;
   }
 };
 
- const fetchAppointments = async ({ status, client, tema, dia, mes,limit = 5, page = 1 }) => {
+/* const fetchAppointments = async ({ status, client, tema, dia, mes,limit = 5, page = 1 }) => {
     try {
     const params = new URLSearchParams({ limit, status, client, tema, dia, mes, page });
     const response = await axios.get(`/https://test-api.loca.lt/agendamentos/pag?${params}`);
@@ -132,18 +145,19 @@ Alert.alert('Sucesso', 'Agendamento adicionado com sucesso!');
       console.error('Erro ao buscar agendamentos:', error);
     }
     return response.data;
-  };
+  };*/
 
-  const loadMore = () => {
+ /* const loadMore = () => {
     if (hasMore) {
       const nextPage = page + 1;
       setPage(nextPage);
       fetchAppointments(nextPage);
     }
-  }; 
+  }; */
 
-/*  const fetchAppointments = async () => {
-    if (loading) {
+
+  const appointmentsGet = async() => {
+   /* if (loading) {
       return <p>Loading...</p>;
     }
     
@@ -151,38 +165,99 @@ Alert.alert('Sucesso', 'Agendamento adicionado com sucesso!');
       return <p className="error">{error.message}</p>;
     }
     if (!user) return;
-    setLoading(true);
+    setLoading(true);*/
     try {
       // Simulação de chamada à API
-      const mockAppointments = [
-      
+      const mockAppointments = [  
     {
       "id": 1,
-      "date": "2023-06-15T10:00:00",
-      "service": "Consulta Médica",
-      "status": "Confirmado",
       "client": "Maria",
       "contato": "11999999999",
-      "modelo": "Simples",
+      "data_evento": "2023-06-15T10:00:00",
       "tema": "Saúde",
+      "modelo": "Simples",
+      "status": "Confirmado",
       "valor": "300.00",
-      "sinal": "100.00",
-      "resta": "200.00",
+      "sinal_entrada": "100.00",
+      "resta_pagar": "200.00",
       "atendente": "João",
       "local": "Clínica A",
       "observacao": "Chegar 15 minutos antes"
-},  
-      
+},
+    {
+      "id": 2,
+      "client": "Ana Maria",
+      "contato": "21999999999",
+      "data_evento": "2023-06-15T10:00:00",
+      "tema": "Moana",
+      "modelo": "Pocke",
+      "status": "Pendente",
+      "valor": "300.00",
+      "sinal_entrada": "100.00",
+      "resta_pagar": "200.00",
+      "atendente": "Vitoria",
+      "local": "Esoaça 3A",
+      "observacao": "Chegar 15 minutos antes"
+},
+    {
+      "id": 3,
+      "client": "João Pedro",
+      "contato": "31999999999",
+      "data_evento": "2023-06-16T14:00:00",
+      "tema": "Futebol",
+      "modelo": "Pocke",
+      "status": "Pendente",
+      "valor": "300.00",
+      "sinal_entrada": "100.00",
+      "resta_pagar": "200.00",
+      "atendente": "Vitoria",
+      "local": "Esoaça 3A",
+      "observacao": "Chegar 15 minutos antes"
+    },
+    {
+      "id": 4,
+      "client": "João Otavio",
+      "contato": "41999999999",
+      "data_evento": "2025-09-13T14:00:00",
+      "tema": "Futebol",
+      "modelo": "Pocket",
+      "status": "Pendente",
+      "valor": "300.00",
+      "sinal_entrada": "100.00",
+      "resta_pagar": "200.00",
+      "atendente": "Vitoria",
+      "local": "Esoaça Star",
+      "observacao": "Chegar 15 minutos antes"
+    }
       ];
       setAppointments(mockAppointments);
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possivel carregar os dados!');
+      Alert.alert('Erro', 'Não foi possivel carregar os dados!', error.message);
     } finally {
       setLoading(false)
     }
-  setAppointments([]);
-  }*/
+ // setAppointments([]);
+  };
+useEffect(() => {
+     appointmentsGet();
+    
+  }, []);
 
+// Buscar agentes (Atendentes)
+const getAtendentes = async () => {
+  try {
+    const response = await axios.get('https://test-api.loca.lt/agente/1');  
+    setAtendentesList(response.data);
+
+    console.log('Atendentes carregados:', response.data);
+    return response.data;
+    
+  } catch (error) {
+    console.error('Erro ao buscar atendentes:', error);
+    Alert.alert('Erro', 'Não foi possivel carregar os atendentes');
+    throw error;
+  }
+};
   // Cancelar agendamento  
   const cancelAppointment = async(id) => {
     try {
@@ -253,6 +328,10 @@ Alert.alert('Sucesso', 'Agendamento adicionado com sucesso!');
       value={{ 
         appointments,
         setAppointments,
+        atendentesList,
+        getAtendentes,
+        loading, 
+        error,
         filteredAppointments,
         setFilteredAppointments,
         loadingMore, 
@@ -265,7 +344,8 @@ Alert.alert('Sucesso', 'Agendamento adicionado com sucesso!');
         getAppointmentById, 
         filterAppointmentsByStatus, 
         refreshAppointments, 
-        initializeAppointments
+        initializeAppointments,
+        appointmentsGet,
       }}>
       {props.children}
     </AppointmentsContext.Provider>

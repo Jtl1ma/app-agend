@@ -41,7 +41,7 @@ const TransactionItem = ({ type, title, date, amount, category }) => {
           styles.transactionAmount,
           { color: type === 'income' ? '#4CD964' : '#FF3B30' }
         ]}>
-          {type === 'income' ? '+' : '-'}${amount}
+          {type === 'income' ? '' : ''}#{amount}
         </Text>
         <MoreHorizontal color="#94A3B8" size={16} />
       </View>
@@ -54,7 +54,8 @@ const styles = StyleSheet.create({
   transactionItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFF",
+   // backgroundColor: "#FFF",
+   backgroundColor: "#f2f7f8ff",
     borderRadius: 12,
     padding: 16,
     gap: 12,

@@ -3,18 +3,20 @@ import { AppointmentsContext } from "../context/appointmentsContext.jsx";
 import { useContext } from "react";
 import AppointmentCard from "../components/appointmentCard.jsx";
 import icons from "../consts/icons.js";
-import EditCard from "../components/editCard.jsx";
-
+//import EditCard from "../components/editCard.jsx";
+//import { appointments } from "../consts/appointments.js";
 
 function Servico(props) {
 
-    const { filteredAppointments } = useContext(AppointmentsContext);
+    const { appointments } = useContext(AppointmentsContext);
   
     const idApp = props.route.params.id;
     const clientApp = props.route.params.client;
     const contApp = props.route.params.contato;
+    
+    
+    console.log("agendamentos",appointments);
 
-      
     return( <View style={styles.container}>
      
     <View style={styles.banner}>
@@ -23,22 +25,47 @@ function Servico(props) {
         <Text style={styles.text}>Contato: {contApp} </Text>
     </View>
 
-        <FlatList data={filteredAppointments}
-         keyExtractor={(serv) => serv.id} 
+        {/*<FlatList 
+            data={appointments?.filter(item => item && item.id !== undefined)}
+            keyExtractor={(serv) => serv?.id?.toString() || Math.random().toString()} 
             showsVerticalScrollIndicator={false}
-            renderItem={(item)=>{
-                return  <AppointmentCard   />
-            }} />
+            renderItem={({ item }) =>
+                        item ? <AppointmentCard 
+                            appointment={item} /> : null
+                        } 
+        />
+
+<FlatList 
+  data={Array.isArray(appointments) 
+    ? appointments.filter(item => item && typeof item.id !== undefined && item.id !== null) 
+    : []}
+  keyExtractor={(serv) => serv && serv.id ? serv.id.toString() : Math.random().toString()}
+  showsVerticalScrollIndicator={false}
+  renderItem={({ item }) =>
+    item ? <AppointmentCard appointment={item} /> : null
+  }
+/>*/}
+  {/*data={Array.isArray(appointments) 
+    ? appointments.filter(item => item && item.id !== undefined && item.id !== null) 
+    : []}*/}
+<FlatList 
+  data={appointments || []}
+  keyExtractor={(serv) => serv && serv.id ? serv.id.toString() : Math.random().toString()}
+  showsVerticalScrollIndicator={false}
+  renderItem={({ item }) =>
+    item ? <AppointmentCard appointment={item} /> : null
+  }
+/>
         </View>
     )
-    
 }
 const styles = StyleSheet.create({
  
   container: {
     flex: 1,
    // padding: 15,
-    backgroundColor: '#f5f5f5',
+   // backgroundColor: '#E3F2FD',
+    backgroundColor: '#dbeafe',
   },
    banner: {
         alignItems: "center",

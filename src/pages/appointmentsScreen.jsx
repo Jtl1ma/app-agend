@@ -3,6 +3,9 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator }
 import { AppointmentsContext } from '../context/appointmentsContext';
 import { format, set, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Ionicons } from '@expo/vector-icons';
+import { Button } from 'react-native';
+//import { ScrollView } from 'react-native-gesture-handler';
 //import AppointmentCard from '../components/appointmentCard';
 
 const AppointmentsScreen = ({ navigation }) => {
@@ -141,6 +144,14 @@ const AppointmentsScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Todos Agendamentos</Text>
+
+      <TouchableOpacity onPress={() => navigation.navigate('Agendar')}>
+            <View style={styles.containerButton}>
+                <Button title="Agendar Novo Cliente" 
+                onPress={() => navigation.navigate('Agendar')} />
+                <Ionicons name="add-circle-outline" size={18} color="white" />
+            </View>
+      </TouchableOpacity>
       
       {appointments.length === 0 && !loadingMore ? (
         <Text style={styles.emptyText}>Nenhum agendamento encontrado</Text>
@@ -168,6 +179,40 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: '#E3F2FD',
+  },
+  containerButton: {
+    marginBottom: 24,
+    marginLeft: 24,
+    padding: 12,
+  },
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#F1F5F9",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  profileButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#007AFF",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  scheduleButton: {
+    backgroundColor: '#6200ee',
+    padding: 10,
+    borderRadius: 10,
+
+  },
+  scheduleButtonText: {
+    color: 'white',
+    fontSize: 18,
+
   },
   title: {
     fontSize: 24,

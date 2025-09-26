@@ -8,7 +8,7 @@ import EditCard from './editCard.jsx';
 
 
 const AppointmentCard = ({ onCancelSuccess }) => {
-  const { filteredAppointments } = useContext(AppointmentsContext);
+  const { appointments } = useContext(AppointmentsContext);
   const navigation = useNavigation();
   
  const getStatusStyles = () => {
@@ -17,7 +17,7 @@ const AppointmentCard = ({ onCancelSuccess }) => {
       Pendente: { bg: '#fef3c7', text: '#d97706', icon: 'pending' },
       Cancelado: { bg: '#fee2e2', text: '#ef4444', icon: 'cancel' },
     };
-    return styles[filteredAppointments[0].status] || { bg: '#e5e7eb', text: '#6b7280', icon: 'help' };
+    return styles[appointments[0].status] || { bg: '#e5e7eb', text: '#6b7280', icon: 'help' };
   };
 
   const statusStyles = getStatusStyles();
@@ -32,7 +32,7 @@ const AppointmentCard = ({ onCancelSuccess }) => {
   const handleCancel = () => {
     Alert.alert(
       'Cancelar Agendamento',
-      `Tem certeza que deseja cancelar ${filteredAppointments[0].id}?`,
+      `Tem certeza que deseja cancelar ${appointments[0].id}?`,
       [
         { text: 'Não', style: 'cancel' },
         { 
@@ -40,7 +40,7 @@ const AppointmentCard = ({ onCancelSuccess }) => {
           onPress: () => {
             // Simulação de chamada à API
             setTimeout(() => {
-              onCancelSuccess(filteredAppointments[0].id);
+              onCancelSuccess(appointments[0].id);
               Alert.alert('Sucesso', 'Agendamento cancelado com sucesso');
             }, 500);
           } 
@@ -52,7 +52,7 @@ const AppointmentCard = ({ onCancelSuccess }) => {
   return (
     <>
     
-    {filteredAppointments.map(app => (
+    {appointments.map(app => (
  
       <View style={styles.card}
       key={app.id}
@@ -137,20 +137,13 @@ const AppointmentCard = ({ onCancelSuccess }) => {
                     
           <TouchableOpacity 
             style={[styles.actionButton, styles.cancelButton]}
-            onPress={()=> navigation.navigate('EditCard')}
+            onPress={()=> handleCancel()}
           >
             <MaterialIcons name="close" size={16} color="#b91c1c" />
             <Text style={[styles.actionText, { color: '#b91c1c' }]}>Cancelar</Text>
           </TouchableOpacity>
         </View>
       )}
-
-      {/*<FlatList data={filteredAppointments}
-         keyExtractor={(serv) => serv.id} 
-            showsVerticalScrollIndicator={false}
-            renderItem={(item)=>{
-                return  <EditCard  />
-            }} />*/}
     </View>
   )
     )} 

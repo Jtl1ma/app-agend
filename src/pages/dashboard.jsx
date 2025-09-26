@@ -1,5 +1,5 @@
-import {useContext} from 'react';
-import { AuthContext } from "../context/authContext";
+import {useContext, useEffect,} from 'react';
+//import { AuthContext } from "../context/authContext";
 import { Dimensions, View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { TrendingUp, User, Bell, BarChart2, CreditCard, Home, Settings } from "lucide-react-native";
 import { LineChart } from "react-native-chart-kit";
@@ -8,15 +8,41 @@ import TransactionItem from "../components/cards/transactionCard";
 import { Ionicons } from '@expo/vector-icons';
 import Button from '../components/button/button';
 import { AppointmentsContext } from '../context/appointmentsContext';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
+//import DateTimePicker from '@react-native-community/datetimepicker';
 
 
 
 // Dashboard Principal
 export default function Dashboard({ navigation }) {
-    const { user } = useContext(AuthContext);
+
     const { appointments } = useContext(AppointmentsContext);
 
-
+    //const somaValor = ()=>{
+      let datas = [];
+        appointments.forEach(itens=> {itens.valor; datas.push(itens.valor)}); 
+          
+         // Converter para números e somar
+          const soma = datas.reduce((total, valor) => total + parseFloat(valor), 0);
+          //console.log(soma.toFixed(2));
+      //    return soma;
+    //}
+/*useEffect(() => {
+  somaValor();
+}, []);*/
+   
+const getStatusColor = (status) => {
+    switch(status) {
+      case 'confirmado': return 'green';
+      case 'concluido': return 'blue';
+      case 'cancelado': return 'red';
+      default: return 'orange'; // Pendente
+    }
+  };
+  const upcomingAppointments = appointments.slice(0, 5);
+  const upAppointments = appointments.slice(0, 1);
 
   return (
     <View style={styles.container}>
@@ -24,7 +50,7 @@ export default function Dashboard({ navigation }) {
       <View style={styles.header}>
         <View>
           <Text style={styles.greeting}>Dashboard</Text>
-          <Text style={styles.subTitle}>Bem-vindo ao seu painel de controle</Text>
+          <Text style={styles.subTitle}>Bem-vindo ao painel de controle!</Text>
         </View>
 
         {/* Icon header */}
@@ -33,50 +59,164 @@ export default function Dashboard({ navigation }) {
             <Bell color="#1E293B" size={24} />
           </TouchableOpacity>
           
-          <View>
+        <View>
           <TouchableOpacity style={styles.profileButton}
            onPress={() => navigation.navigate('Perfil')}>
             <User color="#FFF" size={24} />
           </TouchableOpacity>
           </View>
-
         </View>
-
       </View>
-<View style={styles.containerButton}>
+
+        <TouchableOpacity onPress={() => navigation.navigate('Agendar')}>
+
+      <View style={styles.containerButton}>
           <Button title="Agendar Novo Cliente" 
           onPress={() => navigation.navigate('Agendar')} />
           <Ionicons name="add-circle-outline" size={18} color="white" />
-        </View>
+      </View>
+         </TouchableOpacity>
       
       {/* Conteúdo Principal */}
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Cartões de Estatísticas */}
-        <View style={styles.statsContainer}>
-          <StatsCard 
-            title="Agendamentos do mês" 
-            value="56" 
-            icon={CreditCard} 
-            color="blue" 
-            trend="+12% referente ao mês passado" 
-          />
-          <StatsCard 
-            title="Novos Clientes" 
-            value="45" 
-            icon={TrendingUp} 
-            color="green" 
-            trend="+8% from last month" 
-          />
-          <StatsCard 
-            title="Receita total" 
-            value="R$7.640,50" 
-            icon={BarChart2} 
-            color="orange" 
-            trend="+3% from last month" 
-          />
-        </View>
+          
+         {/* {appointments.map(item=> (*/}
+         {upAppointments.map(item => (
 
-        {/* Gráfico */}
+        <View key={item.id ?? index} style={styles.statsContainer}>
+            {/*Para mostrar os agendamentos do final de semana
+            preciso criar um componente que vai ser renderizado aqui por
+            um filtro (data_inicial, data_final) e pegar os agendamentos
+            do final de semana. Vindo backend.
+    ----------------------//-------------------------        
+        <StatsCard
+            title="Agendamentos do final de semana"
+            value={item[0] ? item[0].length : 0}
+            icon={TrendingUp}
+            color="purple"
+            trend="Serviços do final de semana"
+          />*/}
+          <StatsCard
+            title="Agendamentos do final de semana"
+            value={item[0] ? item[0].length : 0}
+            icon={TrendingUp}
+            color="purple"
+            trend="Serviços do final de semana"
+          />
+
+          <StatsCard 
+          title="Agendamentos do mês" 
+          value={appointments.length} 
+          icon={CreditCard} 
+          color="blue" 
+          trend="+12% referente ao mês passado" 
+          />
+        
+          <StatsCard 
+          title="Total de Clientes" 
+          value={appointments.length} 
+          icon={TrendingUp} 
+          color="green" 
+          trend={`${appointments.length}% referente ao mês passado`} 
+          />
+          <StatsCard 
+          title="Receita total" 
+          value={`R$ ${soma.toFixed(2)}`} 
+          icon={BarChart2} 
+          color="orange" 
+          trend="Serviços concluídos" 
+          />
+          
+        </View>  
+          ))}
+         
+
+        {/* Agendamentos do final de semana */}
+         
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Agendamentos final de semana.</Text>
+            <Text style={styles.detailText}>Total: ({ appointments.length}) 
+            </Text>
+            {appointments.length === 0 ? (
+                      <View style={styles.emptyContainer}>
+                        <Ionicons name="calendar-outline" size={50} color="#ccc" />
+                        <Text style={styles.emptyText}>Nenhum agendamento por enquanto!</Text>
+                        <Text style={styles.emptySubtext}>Toque no botão para agendar</Text>
+                      </View>
+                    ) : (
+                     appointments.map(app => (
+                          
+                      <View key={app.id} style={styles.appointmentItem}>
+                          
+                   <TouchableOpacity onPress={()=> navigation.navigate('serviceAppointment')}>
+
+                          <Text style={styles.appointmentText}>Cliente: {app.client}</Text>
+                          <Text style={styles.appointmentText}>Contato: {app.contato}</Text>
+                          <Text style={styles.appointmentText}>Tema: {app.tema}</Text>
+                          <Text style={styles.appointmentDate}>
+                            {format(new Date(app.data_evento), "PPPP", { locale: ptBR })} 
+                          </Text>
+                          <Text style={styles.appointmentText}>Local: {app.local_evento}</Text>
+                          <Text style={[styles.appointmentStatus, { color: getStatusColor(app.status) }]}>
+                          {app && app.status ? app.status : 'Sem status' || 'pendente' || 'confirmado' || 'concluido' ||'cancelado'}
+                          </Text>
+                    </TouchableOpacity>
+                        </View>
+                      ))
+                    )}
+                    
+          </View>
+        
+        {/* Transações Recentes */}
+        <View style={styles.transactionsContainer}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Próximos Agendamentos</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Agendamentos')}>
+              <Text style={styles.seeAll}>See All</Text>
+            </TouchableOpacity>
+          </View>
+          {/* Lista de Transações monstra apenas os 3 primeiros agendamentos */}
+
+          <View style={styles.transactionsList}>
+            
+          {upcomingAppointments.map(app => (    
+            
+            <TransactionItem
+              type="exponse"
+              title={app?.client}
+              date={app?.data_evento ? format(new Date(app.data_evento), "PPPP", { locale: ptBR }) : ""}
+              amount={app?.valor}
+              category={app?.tema}
+            />
+          ))}
+
+            {/*<TransactionItem
+              type="income"
+              title={appointments[0].client}
+              date={format(new Date(appointments[0].data_evento), "PPPP", { locale: ptBR })}
+              amount={appointments[0].status}
+              category={appointments[0].tema}
+            />
+            <TransactionItem
+              type="expense"
+              title={appointments[0].client}
+              date={format(new Date(appointments[0].data_evento), "PPPP", { locale: ptBR })}
+              amount={appointments[0].status}
+              category={appointments[0].tema}
+            />
+            <TransactionItem
+              type="expense"
+              title={appointments[0].client}
+              date={format(new Date(appointments[0].data_evento), "PPPP", { locale: ptBR })}
+              amount={appointments[0].status}
+              category={appointments[0].tema}
+            />*/}
+          </View>
+        
+        </View>
+        {/* Gráfico de Linhas */}
+        {/*<View>
         <View style={[styles.chartContainer, styles.shadow]}>
           <Text style={styles.sectionTitle}>Visão geral mensal</Text>
           <LineChart
@@ -123,74 +263,18 @@ export default function Dashboard({ navigation }) {
           />
         </View>
 
-        {/* Transações Recentes */}
-        <View style={styles.transactionsContainer}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Agendamentos recentes</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAll}>See All</Text>
-            </TouchableOpacity>
-          </View>
-          
-          <View style={styles.transactionsList}>
-            <TransactionItem
-              type="exponse"
-              title="name client"
-              date="Today"
-              amount="confirmed"
-              category="tema"
-            />
-            <TransactionItem
-              type="income"
-              title="Salary"
-              date="Yesterday"
-              amount="3,500.00"
-              category="Salary"
-            />
-            <TransactionItem
-              type="expense"
-              title="Dinner"
-              date="Yesterday"
-              amount="45.80"
-              category="Food"
-            />
-            <TransactionItem
-              type="expense"
-              title="Netflix"
-              date="Jun 15"
-              amount="14.99"
-              category="Entertainment"
-            />
-          </View>
-        </View>
+
+        </View>*/}
+
       </ScrollView>
 
-      {/* Menu de Navegação */}
-     {/* <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItemActive}>
-          <Home color="#007AFF" size={24} />
-          <Text style={styles.navTextActive}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <CreditCard color="#94A3B8" size={24} />
-          <Text style={styles.navText}>Cards</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <BarChart2 color="#94A3B8" size={24} />
-          <Text style={styles.navText}>Stats</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Settings color="#94A3B8" size={24} />
-          <Text style={styles.navText}>Settings</Text>
-        </TouchableOpacity>
-      </View>*/}
     </View>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8FAFC",
+    backgroundColor: "#E3F2FD",
     paddingTop: 10,
    // paddingBottom: 20,
   },
@@ -335,7 +419,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   transactionsContainer: {
-    paddingHorizontal: 24,
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 12,
+    //paddingHorizontal: 24,
+    marginHorizontal: 24,
+    marginBottom: 8,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -344,6 +433,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   seeAll: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#007AFF",
+
     color: "#007AFF",
     fontWeight: "500",
   },
@@ -353,7 +445,8 @@ const styles = StyleSheet.create({
   transactionItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFF",
+    backgroundColor: "#fff",
+    
     borderRadius: 12,
     padding: 16,
     gap: 12,
@@ -364,9 +457,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
+    
   },
   transactionDetails: {
     flex: 1,
+    
   },
   transactionTitle: {
     fontSize: 16,
@@ -379,6 +474,7 @@ const styles = StyleSheet.create({
     color: "#94A3B8",
   },
   transactionAmountContainer: {
+    
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
@@ -414,5 +510,87 @@ const styles = StyleSheet.create({
     color: "#007AFF",
     marginTop: 4,
     fontWeight: "500",
+  },
+  card: {
+    
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    marginBottom: 24,
+    marginHorizontal: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  cardTitle: {
+    paddingBottom: 24,
+    textAlign: 'center',
+    fontSize: 18,
+  },
+  detailText: {
+    marginLeft: 8,
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#333',
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    paddingVertical: 2,
+   // marginTop: 0,
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#666',
+    marginTop: 10,
+    fontSize: 16,
+  },
+  emptySubtext: {
+    textAlign: 'center',
+    color: '#999',
+    fontSize: 14,
+    marginTop: 5,
+  },
+  appointmentItem: {
+    marginBottom: 15,
+    paddingBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  appointmentDate: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  appointmentText: {
+    color: '#666',
+    marginTop: 3,
+  },
+  appointmentStatus: {
+    color: '#6200ee',
+    marginTop: 5,
+    fontWeight: '500',
+  },
+  seeAllButton: {
+   // marginTop: 2,
+    padding: 14,
+    
+  },
+  seeAllText: {
+    color: '#6200ee',
+    textAlign: 'right',
+    fontWeight: '500',
+  },
+  seAllButton: {
+    flexDirection: 'row',
+  },
+  seaAllButton: {
+padding: 5,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  clearButton: {
+    marginLeft: 5,
   },
 });

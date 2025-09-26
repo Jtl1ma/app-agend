@@ -5,8 +5,8 @@ export default function Button(props) {
     <TouchableOpacity
       style={[styles.btn, props.theme == 'light' ? styles.lightButton : styles.darkButton]}
         onPress={props.onPress}>
-    <Text style={styles.text}>{props.title}</Text>
-        </TouchableOpacity>
+     <Text style={styles.text}>{props.title}</Text>
+    </TouchableOpacity>
   );
     
 }

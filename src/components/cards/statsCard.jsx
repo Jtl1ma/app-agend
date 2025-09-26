@@ -1,21 +1,10 @@
+//import React from "react";
 import { colorVariants } from "../../consts/colors";
-import React from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { 
-  TrendingUp, 
-  User, 
-  Bell, 
-  BarChart2, 
-  CreditCard, 
-  Home, 
-  Settings, 
-  ArrowUpRight,
-  ArrowDownLeft,
-  MoreHorizontal
-} from "lucide-react-native";
+import { TrendingUp } from "lucide-react-native";
 import { LineChart } from "react-native-chart-kit";
-import { Dimensions } from "react-native";
+//import { Dimensions } from "react-native";
 
 
 // Componente StatsCard (que transformamos anteriormente)
